@@ -9,12 +9,11 @@ pub use buffer::BufferInput;
 pub use seek::SeekInput;
 
 use crate::Result;
+use future::{PositionFuture, RewindFuture, SetCheckpointFuture};
 
 use std::ops::{Deref, DerefMut};
 use std::pin::Pin;
 use std::task::{Context, Poll};
-
-use future::{PositionFuture, RewindFuture, SetCheckpointFuture};
 
 /// Rewinding the input, used by `peek()`, `choice()`, etc.
 pub trait Rewind {

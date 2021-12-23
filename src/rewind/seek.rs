@@ -5,7 +5,7 @@ use std::io;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-use futures::io::{AsyncRead, AsyncSeek};
+use futures_io::{AsyncRead, AsyncSeek};
 use pin_project_lite::pin_project;
 
 pin_project! {

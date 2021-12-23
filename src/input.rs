@@ -4,7 +4,8 @@ use std::io;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-use futures::{AsyncRead, Stream};
+use futures_core::Stream;
+use futures_io::AsyncRead;
 use pin_project_lite::pin_project;
 
 pin_project! {
