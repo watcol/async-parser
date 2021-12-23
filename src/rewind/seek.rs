@@ -1,11 +1,12 @@
-use futures::io::{AsyncRead, AsyncSeek, Error as IoError, SeekFrom};
-use futures::task::{Context, Poll};
-use pin_project_lite::pin_project;
-use std::pin::Pin;
-use std::result::Result as StdResult;
-
 use super::Rewind;
 use crate::{ParseError, Result};
+
+use std::io;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+
+use futures::io::{AsyncRead, AsyncSeek};
+use pin_project_lite::pin_project;
 
 pin_project! {
     /// A faster implementation on `Rewind` using `AsyncSeek`.
@@ -42,7 +43,7 @@ impl<R: AsyncRead> AsyncRead for SeekInput<R> {
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
         buf: &mut [u8],
-    ) -> Poll<StdResult<usize, IoError>> {
+    ) -> Poll<io::Result<usize>> {
         self.project().inner.poll_read(cx, buf)
     }
 }
@@ -52,7 +53,7 @@ impl<R: AsyncSeek> Rewind for SeekInput<R> {
     fn poll_position(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<usize>> {
         self.project()
             .inner
-            .poll_seek(cx, SeekFrom::Current(0))
+            .poll_seek(cx, io::SeekFrom::Current(0))
             .map_ok(|pos| pos as usize)
             .map_err(|inner| ParseError::ReadError { inner })
     }
@@ -63,7 +64,7 @@ impl<R: AsyncSeek> Rewind for SeekInput<R> {
     ) -> Poll<Result<Self::Checkpoint>> {
         self.project()
             .inner
-            .poll_seek(cx, SeekFrom::Current(0))
+            .poll_seek(cx, io::SeekFrom::Current(0))
             .map_err(|inner| ParseError::ReadError { inner })
     }
 
@@ -74,7 +75,7 @@ impl<R: AsyncSeek> Rewind for SeekInput<R> {
     ) -> Poll<Result<()>> {
         self.project()
             .inner
-            .poll_seek(cx, SeekFrom::Start(checkpoint))
+            .poll_seek(cx, io::SeekFrom::Start(checkpoint))
             .map_ok(|_| ())
             .map_err(|inner| ParseError::ReadError { inner })
     }

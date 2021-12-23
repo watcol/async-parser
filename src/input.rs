@@ -1,12 +1,11 @@
-use futures::{
-    io::Result as IoResult,
-    task::{Context, Poll},
-    AsyncRead, Stream,
-};
-use pin_project_lite::pin_project;
-use std::pin::Pin;
-
 use crate::{rewind::Rewind, ParseError, Result};
+
+use std::io;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+
+use futures::{AsyncRead, Stream};
+use pin_project_lite::pin_project;
 
 pin_project! {
     /// The input type for parsers, extending `AsyncRead` and implements `Stream`
@@ -37,7 +36,7 @@ impl<T: AsyncRead> AsyncRead for Input<T> {
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
         buf: &mut [u8],
-    ) -> Poll<IoResult<usize>> {
+    ) -> Poll<io::Result<usize>> {
         self.project().inner.poll_read(cx, buf)
     }
 }

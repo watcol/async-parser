@@ -1,6 +1,6 @@
-use futures::io::Error as IoError;
 use std::error::Error;
 use std::fmt;
+use std::io;
 use std::ops::Range;
 
 /// An alias for `Result<T, ParseError>`.
@@ -15,7 +15,7 @@ pub enum ParseError {
         expected: String,
     },
     /// An error while reading from `AsyncRead`.
-    ReadError { inner: IoError },
+    ReadError { inner: io::Error },
 }
 
 impl fmt::Display for ParseError {

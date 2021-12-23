@@ -1,19 +1,20 @@
 //! Rewinding for the input type.
 
+mod future;
+
 mod buffer;
 mod seek;
-
-mod future;
 
 pub use buffer::BufferInput;
 pub use seek::SeekInput;
 
-use future::{PositionFuture, RewindFuture, SetCheckpointFuture};
-
 use crate::Result;
-use futures::task::{Context, Poll};
+
 use std::ops::{Deref, DerefMut};
 use std::pin::Pin;
+use std::task::{Context, Poll};
+
+use future::{PositionFuture, RewindFuture, SetCheckpointFuture};
 
 /// Rewinding the input, used by `peek()`, `choice()`, etc.
 pub trait Rewind {

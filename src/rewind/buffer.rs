@@ -1,17 +1,15 @@
-use futures::{
-    io::Error as IoError,
-    task::{Context, Poll},
-    AsyncRead,
-};
-use pin_project_lite::pin_project;
-use std::pin::Pin;
-use std::result::Result as StdResult;
-
 mod inner;
-use inner::Buffer;
 
 use super::Rewind;
 use crate::Result;
+use inner::Buffer;
+
+use std::io;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+
+use futures::AsyncRead;
+use pin_project_lite::pin_project;
 
 pin_project! {
     /// A `Rewind` implementation using buffers.
@@ -54,7 +52,7 @@ impl<R: AsyncRead> AsyncRead for BufferInput<R> {
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
         buf: &mut [u8],
-    ) -> Poll<StdResult<usize, IoError>> {
+    ) -> Poll<io::Result<usize>> {
         let this = self.project();
         let len = buf.len();
 
